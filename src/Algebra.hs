@@ -20,24 +20,24 @@
 -- \(0\) and \(1\). There are various obvious properties that universally hold;
 -- e.g.:
 --
--- * \(x+(y+z)\) = \((x+y)+z\), and \(x*(y*z)\) = \((x*y)*z\). \(\qquad\)
--- [/Associativity/]
--- * \(x+y\) = \(y+x\), and \(x*y\) = \(y*x\) \(\qquad\) [/Commutativity/]
--- * \(x+0 = x*1 = x\) \(\qquad\) [/Identities/]
+-- * \(x+(y+z) = (x+y)+z\), and \(x\cdot (y\cdot z) = (x\cdot y)\cdot z\).
+-- \(\qquad\) [/Associativity/]
+-- * \(x+y = y+x\), and \(x\cdot y = y\cdot x\) \(\qquad\) [/Commutativity/]
+-- * \(x+0 = x\cdot 1 = x\) \(\qquad\) [/Identities/]
 -- * \(\exists y \in \mathbb{Z} [ x+y = 0 ]\) \(\qquad\) [/Additive inverse/]
--- * \(x*(y+z) = x*y + x*z\) \(\qquad\) [/Distributivity/]
+-- * \(x\cdot (y+z) = x\cdot y + x\cdot z\) \(\qquad\) [/Distributivity/]
 --
 -- (Unquantified variables are implicitly quantified over the domain of
 -- discourse, \(\mathbb{Z}\).) There are various things to note. Plenty of
 -- other sets satisfy these laws; for example, the rational numbers, or the
 -- real numbers, or the complex numbers. Note also that, say, the irrational
--- numbers do /not/ satisfy these properties; \(pi + (1-\pi)\) is rational, and
+-- numbers do /not/ satisfy these properties; \(\pi + (1-\pi)\) is rational, and
 -- so \(+\) isn't even a binary function over the irrationals! Finally, note
 -- the asymmetry in the fourth law, an asymmetry not present in the others.
 -- This is necessary, as the following does /not/ hold:
 --
--- * \(\exists y \in \mathbb{Z} [ x*y = 1 ]\) \(\qquad\) [/Multiplicative
--- inverse/]
+-- * \(\exists y \in \mathbb{Z} [ x\cdot y = 1 ]\) \(\qquad\)
+-- [/Multiplicative inverse/]
 --
 -- While \(2\), for example, /does/ have a multiplicative inverse among the
 -- /rationals/, it doesn't when we restrict our attention to the integers. (In
@@ -72,7 +72,7 @@
 -- * \(\overline{3} \cdot \overline{2} = \overline{1}\)
 -- * \(\overline{4} \cdot \overline{4} = \overline{1}\)
 --
--- However, if we look at the integers modulo 6 \(\left(\mathbb{Z}_6\left)\), we
+-- However, if we look at the integers modulo 6 \(\left(\mathbb{Z}_6\right)\), we
 -- find that multiplicative inverses do /not/ always exist; only
 -- \(\overline{1}\) and \(\overline{-1} = \overline{5}\) are invertible. (Try
 -- it!) In fact, the integers modulo \(n\), \(\mathbb{Z}_n\), satisfy the
