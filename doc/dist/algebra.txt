@@ -114,7 +114,7 @@
 --   the operation(s) defined over it/them, and the types of all objects
 --   involved).
 @package algebra
-@version 0.0.0.0
+@version 0.0.1.0
 
 
 -- | This package provides a basic represntation of some common algebraic
@@ -227,3 +227,46 @@
 --   the operation(s) defined over it/them, and the types of all objects
 --   involved).
 module Algebra
+
+-- | A <tt>Group</tt> is a type <tt>G</tt> combined with an instance
+--   declaration for the <a>Group</a> typeclass, whose minimally complete
+--   (and in fact only possible) definition is of <tt>(((*) :: G -&gt; G
+--   -&gt; G), ((id) :: G), (inv :: G -&gt; G))</tt> that satisfies the
+--   following unchecked properties:
+--   
+--   <pre>
+--   (x * y) * z == x * (y * z)
+--   </pre>
+--   
+--   <pre>
+--   (x * id == x) &amp;&amp; (id * x == x)
+--   </pre>
+--   
+--   <pre>
+--   (x * inv x == x) &amp;&amp; (inv x * x == x)
+--   </pre>
+--   
+--   Note that the same type can be a group in multiple ways. This is a bit
+--   annoying in Haskell, as it necessitates the use of <tt>type</tt>
+--   wrappers to implement a class in different ways in the same scope.
+class (Eq g) => Group g
+(*) :: Group g => g -> g -> g
+id :: Group g => g
+inv :: Group g => g -> g
+
+-- | Exponentiation, or repeated application of the group function "(*)".
+--   Note that this is <i>not</i> a binary operation over a <a>Group</a>;
+--   the first argument is a member of the group, but the second is just an
+--   integer, specifying how many times to repeat the operation. Raising to
+--   the zeroth power yields identity; raising to a negative power is the
+--   corresponding positive power of the inverse.
+(^) :: (Group grp) => grp -> Integer -> grp
+
+-- | The <a>order</a> of an element of a group is the smallest positive
+--   integer such that raising the group element to that power (see '(^)')
+--   yields the identity, <a>id</a>---or positive infinity if no such
+--   element exists. The latter case implies that this function may be (and
+--   in fact often is) non-terminating. In finite groups (groups with
+--   finitely many elements), however, it is a useful construct; the order
+--   of any element in a fintie group is finite.
+order :: (Group grp) => grp -> Integer

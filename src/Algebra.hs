@@ -105,7 +105,7 @@
 -- typeclasses); only the "signature" of the structures are (the set(s), the
 -- operation(s) defined over it/them, and the types of all objects involved).
 --
-module Algebra ( module Algebra.Data.Algebra
+module Algebra ( module Algebra.Data.Group
                ) where
 
-import Algebra.Data.Algebra
+import Algebra.Data.Group
