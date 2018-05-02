@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Algebra</title><link href="ocean.css" rel="stylesheet" type="text/css" title="Ocean" /><link rel="stylesheet" type="text/css" href="quick-jump.css" /><script src="haddock-bundle.min.js" async="async" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script></head><body><div id="package-header"><ul class="links" id="page-menu"><li><a href="src/Algebra.html">Source</a></li><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul><p class="caption">algebra-0.0.0.0: Typeclasses and convenience functions for some algebraic structures (laws unenforced).</p></div><div id="content"><div id="module-header"><table class="info"><tr><th valign="top">Copyright</th><td>(c) greatBigDot 2018</td></tr><tr><th>License</th><td>BSD-3-Clause</td></tr><tr><th>Maintainer</th><td>greatBigDot@gmail.com</td></tr><tr><th>Stability</th><td>experimental</td></tr><tr><th>Safe Haskell</th><td>Safe</td></tr><tr><th>Language</th><td>Haskell2010</td></tr></table><p class="caption">Algebra</p></div><div id="description"><p class="caption">Description</p><div class="doc"><p>This package provides a basic represntation of some common algebraic
+ structures (groups, rings, fields, vector spaces, etc.) as Haskell
+ typeclasses. Their laws are currently unenforced. (Though, once Haskell
+ upgrades its type system to allow dependent typing, that will hopefully
+ change!) Till then, this'll do.</p><p>Mathematically, the idea of an algebraic structure is quite simple. Consider
+ (a) the set of integers \(\mathbb{Z}\), (b) two of the most basic functions
+ on it, \(+ : \mathbb{Z}^2 \to \mathbb{Z} \) and
+ \(\cdot : \mathbb{Z}^2 \to \mathbb{Z}\), and (c) two unique elements of it,
+ \(0\) and \(1\). There are various obvious properties that universally hold;
+ e.g.:</p><ul><li>\(x+(y+z) = (x+y)+z\), and \(x\cdot (y\cdot z) = (x\cdot y)\cdot z\).
+ \(\qquad\) [<em>Associativity</em>]</li><li>\(x+y = y+x\), and \(x\cdot y = y\cdot x\) \(\qquad\) [<em>Commutativity</em>]</li><li>\(x+0 = x\cdot 1 = x\) \(\qquad\) [<em>Identities</em>]</li><li>\(\exists y \in \mathbb{Z} [ x+y = 0 ]\) \(\qquad\) [<em>Additive inverse</em>]</li><li>\(x\cdot (y+z) = x\cdot y + x\cdot z\) \(\qquad\) [<em>Distributivity</em>]</li></ul><p>(Unquantified variables are implicitly quantified over the domain of
+ discourse, \(\mathbb{Z}\).) There are various things to note. Plenty of
+ other sets satisfy these laws; for example, the rational numbers, or the
+ real numbers, or the complex numbers. Note also that, say, the irrational
+ numbers do <em>not</em> satisfy these properties; \(\pi + (1-\pi)\) is rational, and
+ so \(+\) isn't even a binary function over the irrationals! Finally, note
+ the asymmetry in the fourth law, an asymmetry not present in the others.
+ This is necessary, as the following does <em>not</em> hold:</p><ul><li>\(\exists y \in \mathbb{Z} [ x\cdot y = 1 ]\) \(\qquad\)
+ [<em>Multiplicative inverse</em>]</li></ul><p>While \(2\), for example, <em>does</em> have a multiplicative inverse among the
+ <em>rationals</em>, it doesn't when we restrict our attention to the integers. (In
+ fact, not even the rational numbers satisfy the above law, because \(0\)
+ does not have a multiplicative inverse. After modifying the law to account
+ for that special case, however, the rationals do satisfy it, while the
+ integers still don't.)</p><p>So, was the point of all this? All we did was consider some numbers that
+ everyone is familiar with and mention some elementary properties of them.
+ How does that lead to any interesting mathematical questions? Well, the key
+ idea, the crucial motivating question of abstract algebra, is the following:</p><p><strong><em>What happens when we go in the other direction?</em></strong></p><p>That is, what happens when we <em>start</em> with a list of properties, then ask
+ what sorts of things satisfy it? The answers to this question are more
+ diverse than you may expect. For example, in addition to the integers and
+ its extensions, other more esoteric sets satisfy the above laws. E.g., the
+ set of integers modulo five,
+ \(\mathbb{Z}_5 = \left\{\overline{0}, \overline{1}, \overline{2}, \overline{3}, \overline{4}\right\}\).
+ In this set, to calculate the &quot;sum&quot; of two elements, we calculate their usual
+ sum, then take that modulo 5 (that is, the remainder when dividing by 5; the
+ modulo operation is essentially a generalization of the concept of even and
+ odd numbers to divisibilities other than by 2); similarly with the product.
+ Thus, for example, \(\overline{4} + \overline{3} = \overline{2}\). A similar
+ line of reasoning indicates that additive inverses exist---in fact, so do
+ multiplicative inverses, at least for non-&#8203;\(0\) elements! Observe:</p><ul><li>\(\overline{1} \cdot \overline{1} = \overline{1}\)</li><li>\(\overline{2} \cdot \overline{3} = \overline{1}\)</li><li>\(\overline{3} \cdot \overline{2} = \overline{1}\)</li><li>\(\overline{4} \cdot \overline{4} = \overline{1}\)</li></ul><p>However, if we look at the integers modulo 6 \(\left(\mathbb{Z}_6\right)\), we
+ find that multiplicative inverses do <em>not</em> always exist; only
+ \(\overline{1}\) and \(\overline{-1} = \overline{5}\) are invertible. (Try
+ it!) In fact, the integers modulo \(n\), \(\mathbb{Z}_n\), satisfy the
+ weakened (i.e., ignoring \(0\)) multiplicative inverse law if and only if
+ \(n\) is prime.</p><p>These do not exhaust the possibilities---not even close!---but it should be
+ enough to give a taste of what abstract algebra is all about. You start with
+ some set with defined operations (a pairing known as a &quot;structure&quot;) that you
+ are familiar with, you distill that structure down to its most basic and
+ fundamental properties, and then you look at what sorts of things satisfy
+ those properties and what those properties alone entail. This allows you to
+ generalize familiar structures to more abstract ideas---the original
+ motivating structure becomes just a special case of a more general property,
+ and seemingly disparate things suddenly become two special cases of a more
+ general idea.</p><p>The laws I gave above define a ring; that is, any set (with the two defined
+ binary operations over it, as well as the two distinguished elements)
+ satisfying the above list of properties is known as a <strong>ring</strong>. The laws are
+ called the <strong>ring axioms</strong>. <strong>Ring theory</strong> is the branch of math studying
+ rings and how they relate to each other and to other parts of math. Rings
+ are not the only algebraic structure; there are many, many more, and this
+ package defines a few of the more important ones as Haskell typeclasses, as
+ well as some instances of types as members of that typeclass. Each module
+ contains in its documentation an overview of that algebraic structure and
+ some interesting properties of them that make them worth studying.</p><p>Sadly, the laws are not yet enforced (as is typical with Haskell
+ typeclasses); only the &quot;signature&quot; of the structures are (the set(s), the
+ operation(s) defined over it/them, and the types of all objects involved).</p></div></div><div id="interface"></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.19.0</p></div></body></html>

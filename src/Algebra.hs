@@ -57,15 +57,15 @@
 -- what sorts of things satisfy it? The answers to this question are more
 -- diverse than you may expect. For example, in addition to the integers and
 -- its extensions, other more esoteric sets satisfy the above laws. E.g., the
--- set of integers modulo five, \(\mathbb{Z}_5 = \left\{\overline{0},
--- \overline{1}, \overline{2}, \overline{3}, \overline{4}\right\}\). In the
--- set, to calculate the "sum" of two elements, we calculate their usual sum,
--- then take that modulo 5 (that is, the remainder when dividing by 5; the
+-- set of integers modulo five,
+-- \(\mathbb{Z}_5 = \left\{\overline{0}, \overline{1}, \overline{2}, \overline{3}, \overline{4}\right\}\).
+-- In this set, to calculate the "sum" of two elements, we calculate their usual
+-- sum, then take that modulo 5 (that is, the remainder when dividing by 5; the
 -- modulo operation is essentially a generalization of the concept of even and
 -- odd numbers to divisibilities other than by 2); similarly with the product.
 -- Thus, for example, \(\overline{4} + \overline{3} = \overline{2}\). A similar
 -- line of reasoning indicates that additive inverses exist---in fact, so do
--- multiplicative inverses, at least for non-\(0\) elements! Observe:
+-- multiplicative inverses, at least for non-&#x200B;\(0\) elements! Observe:
 --
 -- * \(\overline{1} \cdot \overline{1} = \overline{1}\)
 -- * \(\overline{2} \cdot \overline{3} = \overline{1}\)

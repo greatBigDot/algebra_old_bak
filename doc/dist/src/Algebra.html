@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_HADDOCK show-extensions #-}</span><span>
+</span><a name="line-2"></a><span class="hs-comment">-- |</span><span>
+</span><a name="line-3"></a><span class="hs-comment">-- Module      : Algebra</span><span>
+</span><a name="line-4"></a><span class="hs-comment">-- Description : The interface to the modules of algebra: typeclasses and convenience functions for some algebraic structures (laws unenforced).</span><span>
+</span><a name="line-5"></a><span class="hs-comment">-- Copyright   : (c) greatBigDot, 2018</span><span>
+</span><a name="line-6"></a><span class="hs-comment">-- License     : BSD-3-Clause</span><span>
+</span><a name="line-7"></a><span class="hs-comment">-- Maintainer  : greatBigDot@gmail.com</span><span>
+</span><a name="line-8"></a><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><a name="line-9"></a><span class="hs-comment">--</span><span>
+</span><a name="line-10"></a><span class="hs-comment">-- This package provides a basic represntation of some common algebraic</span><span>
+</span><a name="line-11"></a><span class="hs-comment">-- structures (groups, rings, fields, vector spaces, etc.) as Haskell</span><span>
+</span><a name="line-12"></a><span class="hs-comment">-- typeclasses. Their laws are currently unenforced. (Though, once Haskell</span><span>
+</span><a name="line-13"></a><span class="hs-comment">-- upgrades its type system to allow dependent typing, that will hopefully</span><span>
+</span><a name="line-14"></a><span class="hs-comment">-- change!) Till then, this'll do.</span><span>
+</span><a name="line-15"></a><span class="hs-comment">--</span><span>
+</span><a name="line-16"></a><span class="hs-comment">-- Mathematically, the idea of an algebraic structure is quite simple. Consider</span><span>
+</span><a name="line-17"></a><span class="hs-comment">-- (a) the set of integers \(\mathbb{Z}\), (b) two of the most basic functions</span><span>
+</span><a name="line-18"></a><span class="hs-comment">-- on it, \(+ : \mathbb{Z}^2 \to \mathbb{Z} \) and</span><span>
+</span><a name="line-19"></a><span class="hs-comment">-- \(\cdot : \mathbb{Z}^2 \to \mathbb{Z}\), and (c) two unique elements of it,</span><span>
+</span><a name="line-20"></a><span class="hs-comment">-- \(0\) and \(1\). There are various obvious properties that universally hold;</span><span>
+</span><a name="line-21"></a><span class="hs-comment">-- e.g.:</span><span>
+</span><a name="line-22"></a><span class="hs-comment">--</span><span>
+</span><a name="line-23"></a><span class="hs-comment">-- * \(x+(y+z) = (x+y)+z\), and \(x\cdot (y\cdot z) = (x\cdot y)\cdot z\).</span><span>
+</span><a name="line-24"></a><span class="hs-comment">-- \(\qquad\) [/Associativity/]</span><span>
+</span><a name="line-25"></a><span class="hs-comment">-- * \(x+y = y+x\), and \(x\cdot y = y\cdot x\) \(\qquad\) [/Commutativity/]</span><span>
+</span><a name="line-26"></a><span class="hs-comment">-- * \(x+0 = x\cdot 1 = x\) \(\qquad\) [/Identities/]</span><span>
+</span><a name="line-27"></a><span class="hs-comment">-- * \(\exists y \in \mathbb{Z} [ x+y = 0 ]\) \(\qquad\) [/Additive inverse/]</span><span>
+</span><a name="line-28"></a><span class="hs-comment">-- * \(x\cdot (y+z) = x\cdot y + x\cdot z\) \(\qquad\) [/Distributivity/]</span><span>
+</span><a name="line-29"></a><span class="hs-comment">--</span><span>
+</span><a name="line-30"></a><span class="hs-comment">-- (Unquantified variables are implicitly quantified over the domain of</span><span>
+</span><a name="line-31"></a><span class="hs-comment">-- discourse, \(\mathbb{Z}\).) There are various things to note. Plenty of</span><span>
+</span><a name="line-32"></a><span class="hs-comment">-- other sets satisfy these laws; for example, the rational numbers, or the</span><span>
+</span><a name="line-33"></a><span class="hs-comment">-- real numbers, or the complex numbers. Note also that, say, the irrational</span><span>
+</span><a name="line-34"></a><span class="hs-comment">-- numbers do /not/ satisfy these properties; \(\pi + (1-\pi)\) is rational, and</span><span>
+</span><a name="line-35"></a><span class="hs-comment">-- so \(+\) isn't even a binary function over the irrationals! Finally, note</span><span>
+</span><a name="line-36"></a><span class="hs-comment">-- the asymmetry in the fourth law, an asymmetry not present in the others.</span><span>
+</span><a name="line-37"></a><span class="hs-comment">-- This is necessary, as the following does /not/ hold:</span><span>
+</span><a name="line-38"></a><span class="hs-comment">--</span><span>
+</span><a name="line-39"></a><span class="hs-comment">-- * \(\exists y \in \mathbb{Z} [ x\cdot y = 1 ]\) \(\qquad\)</span><span>
+</span><a name="line-40"></a><span class="hs-comment">-- [/Multiplicative inverse/]</span><span>
+</span><a name="line-41"></a><span class="hs-comment">--</span><span>
+</span><a name="line-42"></a><span class="hs-comment">-- While \(2\), for example, /does/ have a multiplicative inverse among the</span><span>
+</span><a name="line-43"></a><span class="hs-comment">-- /rationals/, it doesn't when we restrict our attention to the integers. (In</span><span>
+</span><a name="line-44"></a><span class="hs-comment">-- fact, not even the rational numbers satisfy the above law, because \(0\)</span><span>
+</span><a name="line-45"></a><span class="hs-comment">-- does not have a multiplicative inverse. After modifying the law to account</span><span>
+</span><a name="line-46"></a><span class="hs-comment">-- for that special case, however, the rationals do satisfy it, while the</span><span>
+</span><a name="line-47"></a><span class="hs-comment">-- integers still don't.)</span><span>
+</span><a name="line-48"></a><span class="hs-comment">--</span><span>
+</span><a name="line-49"></a><span class="hs-comment">-- So, was the point of all this? All we did was consider some numbers that</span><span>
+</span><a name="line-50"></a><span class="hs-comment">-- everyone is familiar with and mention some elementary properties of them.</span><span>
+</span><a name="line-51"></a><span class="hs-comment">-- How does that lead to any interesting mathematical questions? Well, the key</span><span>
+</span><a name="line-52"></a><span class="hs-comment">-- idea, the crucial motivating question of abstract algebra, is the following:</span><span>
+</span><a name="line-53"></a><span class="hs-comment">--</span><span>
+</span><a name="line-54"></a><span class="hs-comment">-- __/What happens when we go in the other direction?/__</span><span>
+</span><a name="line-55"></a><span class="hs-comment">--</span><span>
+</span><a name="line-56"></a><span class="hs-comment">-- That is, what happens when we /start/ with a list of properties, then ask</span><span>
+</span><a name="line-57"></a><span class="hs-comment">-- what sorts of things satisfy it? The answers to this question are more</span><span>
+</span><a name="line-58"></a><span class="hs-comment">-- diverse than you may expect. For example, in addition to the integers and</span><span>
+</span><a name="line-59"></a><span class="hs-comment">-- its extensions, other more esoteric sets satisfy the above laws. E.g., the</span><span>
+</span><a name="line-60"></a><span class="hs-comment">-- set of integers modulo five,</span><span>
+</span><a name="line-61"></a><span class="hs-comment">-- \(\mathbb{Z}_5 = \left\{\overline{0}, \overline{1}, \overline{2}, \overline{3}, \overline{4}\right\}\).</span><span>
+</span><a name="line-62"></a><span class="hs-comment">-- In this set, to calculate the &quot;sum&quot; of two elements, we calculate their usual</span><span>
+</span><a name="line-63"></a><span class="hs-comment">-- sum, then take that modulo 5 (that is, the remainder when dividing by 5; the</span><span>
+</span><a name="line-64"></a><span class="hs-comment">-- modulo operation is essentially a generalization of the concept of even and</span><span>
+</span><a name="line-65"></a><span class="hs-comment">-- odd numbers to divisibilities other than by 2); similarly with the product.</span><span>
+</span><a name="line-66"></a><span class="hs-comment">-- Thus, for example, \(\overline{4} + \overline{3} = \overline{2}\). A similar</span><span>
+</span><a name="line-67"></a><span class="hs-comment">-- line of reasoning indicates that additive inverses exist---in fact, so do</span><span>
+</span><a name="line-68"></a><span class="hs-comment">-- multiplicative inverses, at least for non-&amp;#x200B;\(0\) elements! Observe:</span><span>
+</span><a name="line-69"></a><span class="hs-comment">--</span><span>
+</span><a name="line-70"></a><span class="hs-comment">-- * \(\overline{1} \cdot \overline{1} = \overline{1}\)</span><span>
+</span><a name="line-71"></a><span class="hs-comment">-- * \(\overline{2} \cdot \overline{3} = \overline{1}\)</span><span>
+</span><a name="line-72"></a><span class="hs-comment">-- * \(\overline{3} \cdot \overline{2} = \overline{1}\)</span><span>
+</span><a name="line-73"></a><span class="hs-comment">-- * \(\overline{4} \cdot \overline{4} = \overline{1}\)</span><span>
+</span><a name="line-74"></a><span class="hs-comment">--</span><span>
+</span><a name="line-75"></a><span class="hs-comment">-- However, if we look at the integers modulo 6 \(\left(\mathbb{Z}_6\right)\), we</span><span>
+</span><a name="line-76"></a><span class="hs-comment">-- find that multiplicative inverses do /not/ always exist; only</span><span>
+</span><a name="line-77"></a><span class="hs-comment">-- \(\overline{1}\) and \(\overline{-1} = \overline{5}\) are invertible. (Try</span><span>
+</span><a name="line-78"></a><span class="hs-comment">-- it!) In fact, the integers modulo \(n\), \(\mathbb{Z}_n\), satisfy the</span><span>
+</span><a name="line-79"></a><span class="hs-comment">-- weakened (i.e., ignoring \(0\)) multiplicative inverse law if and only if</span><span>
+</span><a name="line-80"></a><span class="hs-comment">-- \(n\) is prime.</span><span>
+</span><a name="line-81"></a><span class="hs-comment">--</span><span>
+</span><a name="line-82"></a><span class="hs-comment">-- These do not exhaust the possibilities---not even close!---but it should be</span><span>
+</span><a name="line-83"></a><span class="hs-comment">-- enough to give a taste of what abstract algebra is all about. You start with</span><span>
+</span><a name="line-84"></a><span class="hs-comment">-- some set with defined operations (a pairing known as a &quot;structure&quot;) that you</span><span>
+</span><a name="line-85"></a><span class="hs-comment">-- are familiar with, you distill that structure down to its most basic and</span><span>
+</span><a name="line-86"></a><span class="hs-comment">-- fundamental properties, and then you look at what sorts of things satisfy</span><span>
+</span><a name="line-87"></a><span class="hs-comment">-- those properties and what those properties alone entail. This allows you to</span><span>
+</span><a name="line-88"></a><span class="hs-comment">-- generalize familiar structures to more abstract ideas---the original</span><span>
+</span><a name="line-89"></a><span class="hs-comment">-- motivating structure becomes just a special case of a more general property,</span><span>
+</span><a name="line-90"></a><span class="hs-comment">-- and seemingly disparate things suddenly become two special cases of a more</span><span>
+</span><a name="line-91"></a><span class="hs-comment">-- general idea.</span><span>
+</span><a name="line-92"></a><span class="hs-comment">--</span><span>
+</span><a name="line-93"></a><span class="hs-comment">-- The laws I gave above define a ring; that is, any set (with the two defined</span><span>
+</span><a name="line-94"></a><span class="hs-comment">-- binary operations over it, as well as the two distinguished elements)</span><span>
+</span><a name="line-95"></a><span class="hs-comment">-- satisfying the above list of properties is known as a __ring__. The laws are</span><span>
+</span><a name="line-96"></a><span class="hs-comment">-- called the __ring axioms__. __Ring theory__ is the branch of math studying</span><span>
+</span><a name="line-97"></a><span class="hs-comment">-- rings and how they relate to each other and to other parts of math. Rings</span><span>
+</span><a name="line-98"></a><span class="hs-comment">-- are not the only algebraic structure; there are many, many more, and this</span><span>
+</span><a name="line-99"></a><span class="hs-comment">-- package defines a few of the more important ones as Haskell typeclasses, as</span><span>
+</span><a name="line-100"></a><span class="hs-comment">-- well as some instances of types as members of that typeclass. Each module</span><span>
+</span><a name="line-101"></a><span class="hs-comment">-- contains in its documentation an overview of that algebraic structure and</span><span>
+</span><a name="line-102"></a><span class="hs-comment">-- some interesting properties of them that make them worth studying.</span><span>
+</span><a name="line-103"></a><span class="hs-comment">--</span><span>
+</span><a name="line-104"></a><span class="hs-comment">-- Sadly, the laws are not yet enforced (as is typical with Haskell</span><span>
+</span><a name="line-105"></a><span class="hs-comment">-- typeclasses); only the &quot;signature&quot; of the structures are (the set(s), the</span><span>
+</span><a name="line-106"></a><span class="hs-comment">-- operation(s) defined over it/them, and the types of all objects involved).</span><span>
+</span><a name="line-107"></a><span class="hs-comment">--</span><span>
+</span><a name="line-108"></a><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Algebra</span><span> </span><span class="hs-special">(</span><span> </span><span class="hs-keyword">module</span><span> </span><a href="Algebra.Data.Algebra.html"><span class="hs-identifier">Algebra.Data.Algebra</span></a><span>
+</span><a name="line-109"></a><span>               </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><a name="line-110"></a><span>
+</span><a name="line-111"></a><span class="hs-keyword">import</span><span> </span><a href="Algebra.Data.Algebra.html"><span class="hs-identifier">Algebra.Data.Algebra</span></a><span>
+</span><a name="line-112"></a></pre></body></html>
