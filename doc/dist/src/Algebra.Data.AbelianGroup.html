@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_HADDOCK show-extensions #-}</span><span>
+</span><a name="line-2"></a><span>
+</span><a name="line-3"></a><span class="hs-comment">-- |</span><span>
+</span><a name="line-4"></a><span class="hs-comment">-- Module      : Algebra.Data.AbelianGroup</span><span>
+</span><a name="line-5"></a><span class="hs-comment">-- Description : A representation of abelian (commutative) groups, an algebraic structure with one set and one associative abelian unital invertible binary operation defined over it.</span><span>
+</span><a name="line-6"></a><span class="hs-comment">-- Copyright   : (c) greatBigDot, 2018</span><span>
+</span><a name="line-7"></a><span class="hs-comment">-- License     : BSD-3-Clause</span><span>
+</span><a name="line-8"></a><span class="hs-comment">-- Maintainer  : greatBigDot@gmail.com</span><span>
+</span><a name="line-9"></a><span class="hs-comment">-- Stability   : experimental</span><span>
+</span><a name="line-10"></a><span class="hs-comment">--</span><span>
+</span><a name="line-11"></a><span class="hs-comment">-- This module defines the algebraic structure known as an &quot;abelian group&quot; as a</span><span>
+</span><a name="line-12"></a><span class="hs-comment">-- Haskell typeclass. Abelian groups are simply groups (see 'Group' in</span><span>
+</span><a name="line-13"></a><span class="hs-comment">-- &quot;Algebraic.Data.Group&quot;) with the extra condition that the binary operation</span><span>
+</span><a name="line-14"></a><span class="hs-comment">-- must be abelian (that is, commutative).</span><span>
+</span><a name="line-15"></a><span class="hs-comment">--</span><span>
+</span><a name="line-16"></a><span class="hs-comment">-- Formally, an abelian group is a 4-tuple</span><span>
+</span><a name="line-17"></a><span class="hs-comment">-- \(\mathscr{G} = (G : \mathscr{V}, + : G^2 \to G, 0 : G, - : G \to G)\)</span><span>
+</span><a name="line-18"></a><span class="hs-comment">-- satisfying the following axioms:</span><span>
+</span><a name="line-19"></a><span class="hs-comment">--</span><span>
+</span><a name="line-20"></a><span class="hs-comment">-- * \((G, +, 0, -)\) forms a group</span><span>
+</span><a name="line-21"></a><span class="hs-comment">-- * \(x + y = y + x\)</span><span>
+</span><a name="line-22"></a><span class="hs-comment">--</span><span>
+</span><a name="line-23"></a><span class="hs-comment">-- You may have noticed that the notation here differs from the one presented</span><span>
+</span><a name="line-24"></a><span class="hs-comment">-- for groups---here, the plus sign is used as the operation (and zero as the</span><span>
+</span><a name="line-25"></a><span class="hs-comment">-- identity), while for more general groups, the multiplication symbol was used</span><span>
+</span><a name="line-26"></a><span class="hs-comment">-- (and one as the identity). This is intentional. The class of abelian groups</span><span>
+</span><a name="line-27"></a><span class="hs-comment">-- has rather different behavior, arising in different situations, than groups.</span><span>
+</span><a name="line-28"></a><span class="hs-comment">-- At first this fact may be a surprise, but the commutativity axiom is actually</span><span>
+</span><a name="line-29"></a><span class="hs-comment">-- quite strong, especially in the context of groups. Remember, a natural way to</span><span>
+</span><a name="line-30"></a><span class="hs-comment">-- think of groups is that they model symmetries---that is, invertible</span><span>
+</span><a name="line-31"></a><span class="hs-comment">-- composable mappings from an object to itself. In general, for /functions/ to</span><span>
+</span><a name="line-32"></a><span class="hs-comment">-- be commutative with respect to composition is a very special property;</span><span>
+</span><a name="line-33"></a><span class="hs-comment">-- reversing the order of two transformations will typically yield different</span><span>
+</span><a name="line-34"></a><span class="hs-comment">-- results. E.g., rotating a polygon, then flipping it over; or squaring a</span><span>
+</span><a name="line-35"></a><span class="hs-comment">-- number, then adding 5. Flipping the order in which these are applied</span><span>
+</span><a name="line-36"></a><span class="hs-comment">-- &quot;typically&quot; changes the outcome. In abelian groups, however, /every/ pair of</span><span>
+</span><a name="line-37"></a><span class="hs-comment">-- transformations must yield the same outcome as applying them in other</span><span>
+</span><a name="line-38"></a><span class="hs-comment">-- directions. This suggests that viewing them as &quot;symmetries&quot; might not be the</span><span>
+</span><a name="line-39"></a><span class="hs-comment">-- best way to think of abelian groups. You can see more discussion of this idea</span><span>
+</span><a name="line-40"></a><span class="hs-comment">-- over at MathOverflow, a Q&amp;A site for professional mathematicians:</span><span>
+</span><a name="line-41"></a><span class="hs-comment">-- &lt;https://mathoverflow.net/questions/2551/&gt;</span><span>
+</span><a name="line-42"></a><span class="hs-comment">--</span><span>
+</span><a name="line-43"></a><span class="hs-comment">-- Abelian groups are important in algebraic geometry. Algebraic geometry is,</span><span>
+</span><a name="line-44"></a><span class="hs-comment">-- roughly speaking, the study of systems of multivariate polynomial equations.</span><span>
+</span><a name="line-45"></a><span class="hs-comment">-- An important idea is that of an &quot;algebraic variety&quot;, which is essentially the</span><span>
+</span><a name="line-46"></a><span class="hs-comment">-- intersection of the roots of a set of multivariate polynomials. For example,</span><span>
+</span><a name="line-47"></a><span class="hs-comment">-- a circle with radius \(r\) and center \((h,k)\) is an algebraic variety,</span><span>
+</span><a name="line-48"></a><span class="hs-comment">-- being the zero of the 2-variable polynomial \((x-h)^2+(y-k)^2-r^2\). In this</span><span>
+</span><a name="line-49"></a><span class="hs-comment">-- framework, one can formulate and pursue various interesting ideas---e.g., a</span><span>
+</span><a name="line-50"></a><span class="hs-comment">-- generalization of the fundamental theorem of algebra to higher dimensions, a</span><span>
+</span><a name="line-51"></a><span class="hs-comment">-- result known as B&amp;#x00E9;zout's Theorem. Anyways, as it turns out, a certain</span><span>
+</span><a name="line-52"></a><span class="hs-comment">-- subset of algebraic varietites, known as &quot;abelian varieties&quot;, form an abelian</span><span>
+</span><a name="line-53"></a><span class="hs-comment">-- group. That is, the points comprising the variety are the group elements, and</span><span>
+</span><a name="line-54"></a><span class="hs-comment">-- using the tools of algebraic geometry one can define a natural group</span><span>
+</span><a name="line-55"></a><span class="hs-comment">-- operation obeying the group laws that is always commutative. As it turns out,</span><span>
+</span><a name="line-56"></a><span class="hs-comment">-- this idea is central to modern cryptography.</span><span>
+</span><a name="line-57"></a><span class="hs-comment">--</span><span>
+</span><a name="line-58"></a><span class="hs-comment">-- Another branch of mathematics where abelian groups shine is category theory.</span><span>
+</span><a name="line-59"></a><span class="hs-comment">-- Categories, among many other things, abstracts abstract algebra. For example,</span><span>
+</span><a name="line-60"></a><span class="hs-comment">-- there is a category of groups, which consists of all groups and all the</span><span>
+</span><a name="line-61"></a><span class="hs-comment">-- homomorphisms between them (that is, functions preserving the group</span><span>
+</span><a name="line-62"></a><span class="hs-comment">-- operations). Category theory is a very useful and interesting branch of math;</span><span>
+</span><a name="line-63"></a><span class="hs-comment">-- it simultaneously generalizes many disprate ideas and introduces many new</span><span>
+</span><a name="line-64"></a><span class="hs-comment">-- interesting questions of its own. Also, in a very pleasing and fun way, it</span><span>
+</span><a name="line-65"></a><span class="hs-comment">-- abstracts itself---there is a category of categories. (Though, that last idea</span><span>
+</span><a name="line-66"></a><span class="hs-comment">-- must be treated with utmost care to avoid set-theoretic Russel's</span><span>
+</span><a name="line-67"></a><span class="hs-comment">-- paradox--esque issues; to bypass most of them, you can just consider the</span><span>
+</span><a name="line-68"></a><span class="hs-comment">-- category of &quot;small&quot; categories.) The category of abelian groups exhibits</span><span>
+</span><a name="line-69"></a><span class="hs-comment">-- various special properties that are useful in the study of categories in</span><span>
+</span><a name="line-70"></a><span class="hs-comment">-- general. As such, a subset of categories known as &quot;abelian categories&quot; have</span><span>
+</span><a name="line-71"></a><span class="hs-comment">-- been defined, with the category of abelian groups being the motivating</span><span>
+</span><a name="line-72"></a><span class="hs-comment">-- example.</span><span>
+</span><a name="line-73"></a><span class="hs-comment">--</span><span>
+</span><a name="line-74"></a><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Algebra.Data.AbelianGroup</span><span> </span><span class="hs-special">(</span><span> </span><a href="Algebra.Data.AbelianGroup.html#AbelianGroup"><span class="hs-identifier hs-type">AbelianGroup</span></a><span class="hs-special">(</span><span class="hs-special">(</span><a href="Algebra.Data.AbelianGroup.html#%2B"><span class="hs-operator hs-var">+</span></a><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><a href="Algebra.Data.AbelianGroup.html#zero"><span class="hs-identifier hs-var">zero</span></a><span class="hs-special">,</span><span> </span><a href="Algebra.Data.AbelianGroup.html#neg"><span class="hs-identifier hs-var">neg</span></a><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><a name="line-75"></a><span>
+</span><a name="line-76"></a><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-identifier">Prelude</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="hs-identifier">P</span><span>
+</span><a name="line-77"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Prelude</span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span> </span><span class="hs-identifier hs-type">Num</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-operator hs-var">+</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-operator hs-var">*</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">-</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a name="line-78"></a><span>                      </span><span class="hs-special">,</span><span> </span><span class="hs-identifier hs-type">Fractional</span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-operator hs-var">/</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a name="line-79"></a><span>                      </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-operator hs-var">^</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="hs-identifier hs-var">id</span><span> </span><span class="hs-special">)</span><span>
+</span><a name="line-80"></a><span class="hs-keyword">import</span><span> </span><a href="Algebra.Data.Group.html"><span class="hs-identifier">Algebra.Data.Group</span></a><span> </span><span class="hs-special">(</span><span> </span><a href="Algebra.Data.Group.html#Group"><span class="hs-identifier hs-type">Group</span></a><span class="hs-special">(</span><span class="hs-special">(</span><a href="Algebra.Data.Group.html#%2A"><span class="hs-operator hs-var">*</span></a><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><a href="Algebra.Data.Group.html#id"><span class="hs-identifier hs-var">id</span></a><span class="hs-special">,</span><span> </span><a href="Algebra.Data.Group.html#inv"><span class="hs-identifier hs-var">inv</span></a><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
+</span><a name="line-81"></a><span>
+</span><a name="line-82"></a><span class="hs-comment">-- | An 'AbelianGroup' is a type that is an instance of 'Group' that also</span><span>
+</span><a name="line-83"></a><span class="hs-comment">-- satisfies the following unchecked property:</span><span>
+</span><a name="line-84"></a><span class="hs-comment">--</span><span>
+</span><a name="line-85"></a><span class="hs-comment">-- prop&gt; x + y == y + x</span><span>
+</span><a name="line-86"></a><span class="hs-comment">--</span><span>
+</span><a name="line-87"></a><span class="hs-comment">-- As the signature of abelian group is the same as that of a group, and since</span><span>
+</span><a name="line-88"></a><span class="hs-comment">-- the axioms are currently unchecked, the minimally complete definition is</span><span>
+</span><a name="line-89"></a><span class="hs-comment">-- the empty set.</span><span>
+</span><a name="line-90"></a><span class="hs-keyword">class</span><span> </span><a href="Algebra.Data.Group.html#Group"><span class="hs-identifier hs-type">Group</span></a><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span> </span><span class="hs-glyph">=&gt;</span><span> </span><a name="AbelianGroup"><a href="Algebra.Data.AbelianGroup.html#AbelianGroup"><span class="hs-identifier">AbelianGroup</span></a></a><span> </span><a name="local-6989586621679026945"><a href="#local-6989586621679026945"><span class="hs-identifier">g</span></a></a><span> </span><span class="hs-keyword">where</span><span>
+</span><a name="line-91"></a><span>  </span><span class="hs-special">(</span><span class="hs-operator">+</span><span class="hs-special">)</span><span>  </span><span class="hs-glyph">::</span><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span> </span><span class="hs-glyph">-&gt;</span><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span> </span><span class="hs-glyph">-&gt;</span><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span>
+</span><a name="line-92"></a><span>  </span><span class="hs-identifier">zero</span><span> </span><span class="hs-glyph">::</span><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span>
+</span><a name="line-93"></a><span>  </span><span class="hs-identifier">neg</span><span>  </span><span class="hs-glyph">::</span><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span> </span><span class="hs-glyph">-&gt;</span><span> </span><a href="#local-6989586621679026945"><span class="hs-identifier hs-type">g</span></a><span>
+</span><a name="line-94"></a><span>
+</span><a name="line-95"></a><span>  </span><span class="hs-special">(</span><a name="local-8214565720323801853"><a href="Algebra.Data.AbelianGroup.html#%2B"><span class="hs-operator">+</span></a></a><span class="hs-special">)</span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><a href="Algebra.Data.Group.html#%2A"><span class="hs-operator hs-var">*</span></a><span class="hs-special">)</span><span>
+</span><a name="line-96"></a><span>  </span><a name="local-8214565720323801854"><a href="Algebra.Data.AbelianGroup.html#zero"><span class="hs-identifier">zero</span></a></a><span> </span><span class="hs-glyph">=</span><span> </span><a href="Algebra.Data.Group.html#id"><span class="hs-identifier hs-var">id</span></a><span>
+</span><a name="line-97"></a><span>  </span><a name="local-8214565720323801855"><a href="Algebra.Data.AbelianGroup.html#neg"><span class="hs-identifier">neg</span></a></a><span>  </span><span class="hs-glyph">=</span><span> </span><a href="Algebra.Data.Group.html#inv"><span class="hs-identifier hs-var">inv</span></a><span>
+</span><a name="line-98"></a></pre></body></html>

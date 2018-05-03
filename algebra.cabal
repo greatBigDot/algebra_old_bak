@@ -130,7 +130,7 @@ homepage:    https://github.com/greatBigDot/algebra.git
 copyright:   (c) greatBigDot, 2018
 license:     BSD-3-Clause
 
-version:       0.0.1.0
+version:       0.1.0.0
 stability:     experimental
 build-type:    Simple
 tested-with:   GHC == 8.4.*
@@ -143,13 +143,13 @@ extra-source-files: README.md, stack.yaml
 -- extra-tmp-files:
 
 library
-    exposed-modules: Algebra
-    other-modules:   Algebra.Data.Group
+    exposed-modules: Algebra, Algebra.Data.Group, Algebra.Data.AbelianGroup
+--  other-modules:
     hs-source-dirs:  src/
 
     default-language: Haskell2010
     build-depends:    base == 4.11.*
-    -- default-extensions:
+    default-extensions: GADTs, TypeInType, NoImplicitPrelude
 
 -- executable Algebra
 --     main-is:        Main.hs
@@ -157,4 +157,4 @@ library
 
 --     default-language: Haskell2010
 --     build-depends:    base == 4.11.*
---     -- default-extensions:
+--     -- default-extensions: GADTs, TypeInType

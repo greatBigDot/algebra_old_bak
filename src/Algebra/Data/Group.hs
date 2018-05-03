@@ -1,4 +1,6 @@
 {-# OPTIONS_HADDOCK show-extensions #-}
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
+
 -- |
 -- Module      : Algebra.Data.Group
 -- Description : A representation of "groups", an algebraic structure with one set and one associative unital invertible binary operation defined over it.
@@ -13,9 +15,9 @@
 -- set \(G\) and an associative unital invertible binary operation \(*\) defined
 -- over it. Alternatively, one can view a group as consisting of said set, an
 -- associative binary operation \(*\), a nullary operation (i.e., an element of
--- the set) \(1\), and a unary operation \(\left(\textemdash\right)^{-1}\) over
+-- the set) \(1\), and a unary operation \((-)^{-1}\) over
 -- it, such that \(1\) is an identity of \(*\) and
--- \(\left(\textemdash\right)^{-1}\) inverts \(*\). These perspectives are
+-- \((-)^{-1}\) inverts \(*\). These perspectives are
 -- equivalent; to prove equivalence, however, you must first show that the first
 -- definition implies the uniqueness of the identity and the inversion operator.
 -- (Proving this is left as an exercise to the reader.) The latter view, typical
@@ -25,7 +27,7 @@
 -- definition allows us to verify more of the mathematical details.
 --
 -- To speak more formally, a __group__ is a 4-tuple
--- \(\mathscr{G} = (G : __\mathscr{V}__,* : G^2 \to G, 1 : G, \(\left(\textemdash\right)^{-1}\) : G \to G)\)
+-- \(\mathscr{G} = (G : \mathscr{V},* : G^2 \to G, 1 : G, (-)^{-1} : G \to G)\)
 -- satisfying the following axioms (all variables are implcitly universally
 -- quantified over \(G\)):
 --
@@ -62,11 +64,14 @@
 -- defining more "structured" structures, such as rings.
 --
 module Algebra.Data.Group ( Group((*), id, inv)
-                          , (^), order) where
+                          , (^), (//), (\\), order) where
 
--- I think this works
-import qualified Prelude as P ((*),id,(^))
-import Prelude hiding ((*),id,(^))
+-- I think this works. Prelude is first imported qualified, then an unqualified
+-- version excluding the symbols I need is brought in.
+import qualified Prelude as P
+import Prelude hiding ( Num((+), (*), (-))
+                      , Fractional((/))
+                      , (^), id )
 
 -- |
 -- A @Group@ is a type @G@ combined with an instance declaration for the 'Group'
@@ -87,7 +92,7 @@ class (Eq g) => Group g where
   inv :: g -> g
 
 -- |
--- Exponentiation, or repeated application of the group function "(*)". Note
+-- Exponentiation, or repeated application of the group function @(@'*'@)@. Note
 -- that this is /not/ a binary operation over a 'Group'; the first argument is a
 -- member of the group, but the second is just an integer, specifying how many
 -- times to repeat the operation. Raising to the zeroth power yields identity;
@@ -96,17 +101,31 @@ class (Eq g) => Group g where
 (^) :: (Group grp) => grp -> Integer -> grp
 g ^ n
   | n == 0 = id
-  | n <  0 = (inv g) ^ (-n)
-  | n >  0 = g * (g ^ (n-1))
+  | n <  0 = (inv g) ^ (negate n)
+  | n >  0 = g * (g ^ (n `subtract` 1))
 
 -- | The 'order' of an element of a group is the smallest positive integer such that
--- raising the group element to that power (see '(^)') yields the identity,
+-- raising the group element to that power (see @(@'^'@)@) yields the identity,
 -- 'id'---or positive infinity if no such element exists. The latter case
 -- implies that this function may be (and in fact often is) non-terminating. In
 -- finite groups (groups with finitely many elements), however, it is a useful
 -- construct; the order of any element in a fintie group is finite.
 order :: (Group grp) => grp -> Integer
 order g = toInteger . length . takeWhile (/= id) . map (g^) $ [1..]
+
+-- | Right group division. The first argument is multiplied on the right by the
+-- inverse of the second argument. Because @(@'*'@)@ is not necessarily
+-- commutative, this may differ from left division, @(@'\\'@)@. For example,
+-- @h*g\/\/g == h@, but @h*g\/\/h@ is not necessarily @g@.
+(//) :: (Group grp) => grp -> grp -> grp
+g//h = g * inv h
+
+-- | Left group division. The first argument is multiplied on the left by the
+-- inverse of the second argument. Because @(@'*'@)@ is not necessarily
+-- commutative, this may differ from right division, @(@'//'@)@. For example,
+-- @h*g\\\\h == g@, but @h*g\\\\g@ is not necessarily @h@.
+(\\) :: (Group grp) => grp -> grp -> grp
+g\\h = inv h * g
 
 -- | For any two groups \(G\) and \(H\), there is a group \(G \times H\) defined
 -- in the obvious way.
@@ -116,10 +135,16 @@ instance (Group g, Group h) => Group (g,h) where
   inv = \(g,h) -> (inv g, inv h)
 
 -- | The integers form a group under addition, with \(0\) as the identity. (The
--- notation is quite unfortunate, especially since the integers don't forma
+-- notation is quite unfortunate, especially since the integers don't form a
 -- group under multiplication!)
 instance Group Integer where
-  (*) = (+)
+  (*) = (P.+)
   id  = 0
-  inv = negate
+  inv = P.negate
 
+-- | The rationals form a group under addition the same way the integers do.
+-- Again, the notation is horrid--sorry!
+instance Group Rational where
+  (*) = (P.+)
+  id  = 0
+  inv = P.negate

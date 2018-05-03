@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Algebra.Data.AbelianGroup</title><link href="ocean.css" rel="stylesheet" type="text/css" title="Ocean" /><link rel="stylesheet" type="text/css" href="quick-jump.css" /><script src="haddock-bundle.min.js" async="async" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script></head><body><div id="package-header"><ul class="links" id="page-menu"><li><a href="src/Algebra.Data.AbelianGroup.html">Source</a></li><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul><p class="caption">algebra-0.1.0.0: Typeclasses and convenience functions for some algebraic structures (laws unenforced).</p></div><div id="content"><div id="module-header"><table class="info"><tr><th valign="top">Copyright</th><td>(c) greatBigDot 2018</td></tr><tr><th>License</th><td>BSD-3-Clause</td></tr><tr><th>Maintainer</th><td>greatBigDot@gmail.com</td></tr><tr><th>Stability</th><td>experimental</td></tr><tr><th>Safe Haskell</th><td>Safe</td></tr><tr><th>Language</th><td>Haskell2010</td></tr><tr><th>Extensions</th><td><ul class="extension-list"><li>MonoLocalBinds</li><li>TypeInType</li><li>GADTs</li><li>GADTSyntax</li><li>PolyKinds</li><li>DataKinds</li><li>KindSignatures</li></ul></td></tr></table><p class="caption">Algebra.Data.AbelianGroup</p></div><div id="description"><p class="caption">Description</p><div class="doc"><p>This module defines the algebraic structure known as an &quot;abelian group&quot; as a
+ Haskell typeclass. Abelian groups are simply groups (see <code><a href="Algebra-Data-Group.html#t:Group" title="Algebra.Data.Group">Group</a></code> in
+ <a href="Algebraic-Data-Group.html">Algebraic.Data.Group</a>) with the extra condition that the binary operation
+ must be abelian (that is, commutative).</p><p>Formally, an abelian group is a 4-tuple
+ \(\mathscr{G} = (G : \mathscr{V}, + : G^2 \to G, 0 : G, - : G \to G)\)
+ satisfying the following axioms:</p><ul><li>\((G, +, 0, -)\) forms a group</li><li>\(x + y = y + x\)</li></ul><p>You may have noticed that the notation here differs from the one presented
+ for groups---here, the plus sign is used as the operation (and zero as the
+ identity), while for more general groups, the multiplication symbol was used
+ (and one as the identity). This is intentional. The class of abelian groups
+ has rather different behavior, arising in different situations, than groups.
+ At first this fact may be a surprise, but the commutativity axiom is actually
+ quite strong, especially in the context of groups. Remember, a natural way to
+ think of groups is that they model symmetries---that is, invertible
+ composable mappings from an object to itself. In general, for <em>functions</em> to
+ be commutative with respect to composition is a very special property;
+ reversing the order of two transformations will typically yield different
+ results. E.g., rotating a polygon, then flipping it over; or squaring a
+ number, then adding 5. Flipping the order in which these are applied
+ &quot;typically&quot; changes the outcome. In abelian groups, however, <em>every</em> pair of
+ transformations must yield the same outcome as applying them in other
+ directions. This suggests that viewing them as &quot;symmetries&quot; might not be the
+ best way to think of abelian groups. You can see more discussion of this idea
+ over at MathOverflow, a Q&amp;A site for professional mathematicians:
+ <a href="https://mathoverflow.net/questions/2551/">https://mathoverflow.net/questions/2551/</a></p><p>Abelian groups are important in algebraic geometry. Algebraic geometry is,
+ roughly speaking, the study of systems of multivariate polynomial equations.
+ An important idea is that of an &quot;algebraic variety&quot;, which is essentially the
+ intersection of the roots of a set of multivariate polynomials. For example,
+ a circle with radius \(r\) and center \((h,k)\) is an algebraic variety,
+ being the zero of the 2-variable polynomial \((x-h)^2+(y-k)^2-r^2\). In this
+ framework, one can formulate and pursue various interesting ideas---e.g., a
+ generalization of the fundamental theorem of algebra to higher dimensions, a
+ result known as B&#233;zout's Theorem. Anyways, as it turns out, a certain
+ subset of algebraic varietites, known as &quot;abelian varieties&quot;, form an abelian
+ group. That is, the points comprising the variety are the group elements, and
+ using the tools of algebraic geometry one can define a natural group
+ operation obeying the group laws that is always commutative. As it turns out,
+ this idea is central to modern cryptography.</p><p>Another branch of mathematics where abelian groups shine is category theory.
+ Categories, among many other things, abstracts abstract algebra. For example,
+ there is a category of groups, which consists of all groups and all the
+ homomorphisms between them (that is, functions preserving the group
+ operations). Category theory is a very useful and interesting branch of math;
+ it simultaneously generalizes many disprate ideas and introduces many new
+ interesting questions of its own. Also, in a very pleasing and fun way, it
+ abstracts itself---there is a category of categories. (Though, that last idea
+ must be treated with utmost care to avoid set-theoretic Russel's
+ paradox--esque issues; to bypass most of them, you can just consider the
+ category of &quot;small&quot; categories.) The category of abelian groups exhibits
+ various special properties that are useful in the study of categories in
+ general. As such, a subset of categories known as &quot;abelian categories&quot; have
+ been defined, with the category of abelian groups being the motivating
+ example.</p></div></div><div id="synopsis"><details id="syn"><summary>Synopsis</summary><ul class="details-toggle" data-details-id="syn"><li class="src short"><span class="keyword">class</span> <a href="Algebra-Data-Group.html#t:Group" title="Algebra.Data.Group">Group</a> g =&gt; <a href="#t:AbelianGroup">AbelianGroup</a> g <span class="keyword">where</span><ul class="subs"></ul></li></ul></details></div><div id="interface"><h1>Documentation</h1><div class="top"><p class="src"><span class="keyword">class</span> <a href="Algebra-Data-Group.html#t:Group" title="Algebra.Data.Group">Group</a> g =&gt; <a id="t:AbelianGroup" class="def">AbelianGroup</a> g <span class="keyword">where</span> <a href="src/Algebra.Data.AbelianGroup.html#AbelianGroup" class="link">Source</a> <a href="#t:AbelianGroup" class="selflink">#</a></p><div class="doc"><p>An <code><a href="Algebra-Data-AbelianGroup.html#t:AbelianGroup" title="Algebra.Data.AbelianGroup">AbelianGroup</a></code> is a type that is an instance of <code><a href="Algebra-Data-Group.html#t:Group" title="Algebra.Data.Group">Group</a></code> that also
+ satisfies the following unchecked property:</p><pre>x + y == y + x</pre><p>As the signature of abelian group is the same as that of a group, and since
+ the axioms are currently unchecked, the minimally complete definition is
+ the empty set.</p></div><div class="subs methods"><p class="caption">Methods</p><p class="src"><a id="v:-43-" class="def">(+)</a> :: g -&gt; g -&gt; g <a href="src/Algebra.Data.AbelianGroup.html#%2B" class="link">Source</a> <a href="#v:-43-" class="selflink">#</a></p><p class="src"><a id="v:zero" class="def">zero</a> :: g <a href="src/Algebra.Data.AbelianGroup.html#zero" class="link">Source</a> <a href="#v:zero" class="selflink">#</a></p><p class="src"><a id="v:neg" class="def">neg</a> :: g -&gt; g <a href="src/Algebra.Data.AbelianGroup.html#neg" class="link">Source</a> <a href="#v:neg" class="selflink">#</a></p></div></div></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.19.0</p></div></body></html>

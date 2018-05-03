@@ -114,7 +114,220 @@
 --   the operation(s) defined over it/them, and the types of all objects
 --   involved).
 @package algebra
-@version 0.0.1.0
+@version 0.1.0.0
+
+
+-- | This module defines a mathematical "group" as a Haskell typeclass.
+--   (See module <a>Algebra</a> for an overview of algebraic structures.
+--   See typeclass <a>Group</a> for discussion about implementation.)
+--   Groups are defined by a single set &lt;math&gt; and an associative
+--   unital invertible binary operation &lt;math&gt; defined over it.
+--   Alternatively, one can view a group as consisting of said set, an
+--   associative binary operation &lt;math&gt;, a nullary operation (i.e.,
+--   an element of the set) &lt;math&gt;, and a unary operation
+--   &lt;math&gt; over it, such that &lt;math&gt; is an identity of
+--   &lt;math&gt; and &lt;math&gt; inverts &lt;math&gt;. These perspectives
+--   are equivalent; to prove equivalence, however, you must first show
+--   that the first definition implies the uniqueness of the identity and
+--   the inversion operator. (Proving this is left as an exercise to the
+--   reader.) The latter view, typical in universal algebra, will be much
+--   more convenient to use in Haskell; as mentioned in the package
+--   overview, the structures' axioms cannot be verified, and so treating
+--   the identity and inversion operators as part of a group's definition
+--   allows us to verify more of the mathematical details.
+--   
+--   To speak more formally, a <b>group</b> is a 4-tuple &lt;math&gt;
+--   satisfying the following axioms (all variables are implcitly
+--   universally quantified over &lt;math&gt;):
+--   
+--   <ul>
+--   <li><i>Associativity:</i> &lt;math&gt; &lt;math&gt;</li>
+--   <li><i>Identity:</i> &lt;math&gt; &lt;math&gt;</li>
+--   <li><i>Inverses:</i> &lt;math&gt; &lt;math&gt;</li>
+--   </ul>
+--   
+--   Groups are useful for modelling <i>symmetries</i>. That is, you have
+--   some object---say, a geometrical figure---that you can transform in
+--   various ways that leave the object unchanged. For example, if you have
+--   a square, you can rotate it &lt;math&gt;, &lt;math&gt;, &lt;math&gt;,
+--   or &lt;math&gt; and it looks the same as it did before. You can view
+--   these "symmetries"---that is, transformations that preserve the
+--   salient features of the object---as forming a group, with composition
+--   as the group operation. Indeed, any two symmetric transforms applied
+--   one after another yield another symmetry; applying one symmetry, and
+--   then (applying a second, then a third) is exactly equivalent to
+--   (applying one symmetry, and then a second), and then applying a third;
+--   there is an identity symmetry that leaves other symmetries unchanged
+--   upon composition (the identity function (or if you prefer, rotation by
+--   &lt;math&gt;)); and every symmetry has a corresponding symmetry that
+--   undoes it. The awesome thing is that these observations don't merely
+--   apply the rotations of a square---if you have <i>any</i> set of ways
+--   to transform <i>any</i> mathematical object, such that you include a
+--   "do-nothing" transformation and every transformation has a
+--   corresponding transformation done "in reverse"--- well, then you have
+--   a group! (Assoicativity if guaranteed because function composition is
+--   of course always associative!) Interestingly, the converse of this
+--   idea holds; every group is a subgroup of some symmetric group. As for
+--   applications, group theory is central to modern particle physics due
+--   to the various symmetric properties the universe exhibits at that
+--   scale (sorry for being so vague, but it's too complicated to go into
+--   further detail here).
+--   
+--   Groups probably have the highest product of simplicity and
+--   interesting-ness, for some values of those terms. They provide a
+--   natural foudnation for defining more "structured" structures, such as
+--   rings.
+module Algebra.Data.Group
+
+-- | A <tt>Group</tt> is a type <tt>G</tt> combined with an instance
+--   declaration for the <a>Group</a> typeclass, whose minimally complete
+--   (and in fact only possible) definition is of <tt>(((*) :: G -&gt; G
+--   -&gt; G), ((id) :: G), (inv :: G -&gt; G))</tt> that satisfies the
+--   following unchecked properties:
+--   
+--   <pre>
+--   (x * y) * z == x * (y * z)
+--   </pre>
+--   
+--   <pre>
+--   (x * id == x) &amp;&amp; (id * x == x)
+--   </pre>
+--   
+--   <pre>
+--   (x * inv x == x) &amp;&amp; (inv x * x == x)
+--   </pre>
+--   
+--   Note that the same type can be a group in multiple ways. This is a bit
+--   annoying in Haskell, as it necessitates the use of <tt>type</tt>
+--   wrappers to implement a class in different ways in the same scope.
+class (Eq g) => Group g
+(*) :: Group g => g -> g -> g
+id :: Group g => g
+inv :: Group g => g -> g
+
+-- | Exponentiation, or repeated application of the group function
+--   <tt>(</tt><a>*</a><tt>)</tt>. Note that this is <i>not</i> a binary
+--   operation over a <a>Group</a>; the first argument is a member of the
+--   group, but the second is just an integer, specifying how many times to
+--   repeat the operation. Raising to the zeroth power yields identity;
+--   raising to a negative power is the corresponding positive power of the
+--   inverse.
+(^) :: (Group grp) => grp -> Integer -> grp
+
+-- | Right group division. The first argument is multiplied on the right by
+--   the inverse of the second argument. Because
+--   <tt>(</tt><a>*</a><tt>)</tt> is not necessarily commutative, this may
+--   differ from left division, <tt>(</tt><a>\\</a><tt>)</tt>. For example,
+--   <tt>h*g//g == h</tt>, but <tt>h*g//h</tt> is not necessarily
+--   <tt>g</tt>.
+(//) :: (Group grp) => grp -> grp -> grp
+
+-- | Left group division. The first argument is multiplied on the left by
+--   the inverse of the second argument. Because
+--   <tt>(</tt><a>*</a><tt>)</tt> is not necessarily commutative, this may
+--   differ from right division, <tt>(</tt><a>//</a><tt>)</tt>. For
+--   example, <tt>h*g\\h == g</tt>, but <tt>h*g\\g</tt> is not necessarily
+--   <tt>h</tt>.
+(\\) :: (Group grp) => grp -> grp -> grp
+
+-- | The <a>order</a> of an element of a group is the smallest positive
+--   integer such that raising the group element to that power (see
+--   <tt>(</tt><a>^</a><tt>)</tt>) yields the identity, <a>id</a>---or
+--   positive infinity if no such element exists. The latter case implies
+--   that this function may be (and in fact often is) non-terminating. In
+--   finite groups (groups with finitely many elements), however, it is a
+--   useful construct; the order of any element in a fintie group is
+--   finite.
+order :: (Group grp) => grp -> Integer
+instance (Algebra.Data.Group.Group g, Algebra.Data.Group.Group h) => Algebra.Data.Group.Group (g, h)
+instance Algebra.Data.Group.Group GHC.Integer.Type.Integer
+instance Algebra.Data.Group.Group GHC.Real.Rational
+
+
+-- | This module defines the algebraic structure known as an "abelian
+--   group" as a Haskell typeclass. Abelian groups are simply groups (see
+--   <a>Group</a> in <a>Algebraic.Data.Group</a>) with the extra condition
+--   that the binary operation must be abelian (that is, commutative).
+--   
+--   Formally, an abelian group is a 4-tuple &lt;math&gt; satisfying the
+--   following axioms:
+--   
+--   <ul>
+--   <li>&lt;math&gt; forms a group</li>
+--   <li>&lt;math&gt;</li>
+--   </ul>
+--   
+--   You may have noticed that the notation here differs from the one
+--   presented for groups---here, the plus sign is used as the operation
+--   (and zero as the identity), while for more general groups, the
+--   multiplication symbol was used (and one as the identity). This is
+--   intentional. The class of abelian groups has rather different
+--   behavior, arising in different situations, than groups. At first this
+--   fact may be a surprise, but the commutativity axiom is actually quite
+--   strong, especially in the context of groups. Remember, a natural way
+--   to think of groups is that they model symmetries---that is, invertible
+--   composable mappings from an object to itself. In general, for
+--   <i>functions</i> to be commutative with respect to composition is a
+--   very special property; reversing the order of two transformations will
+--   typically yield different results. E.g., rotating a polygon, then
+--   flipping it over; or squaring a number, then adding 5. Flipping the
+--   order in which these are applied "typically" changes the outcome. In
+--   abelian groups, however, <i>every</i> pair of transformations must
+--   yield the same outcome as applying them in other directions. This
+--   suggests that viewing them as "symmetries" might not be the best way
+--   to think of abelian groups. You can see more discussion of this idea
+--   over at MathOverflow, a Q&amp;A site for professional mathematicians:
+--   <a>https://mathoverflow.net/questions/2551/</a>
+--   
+--   Abelian groups are important in algebraic geometry. Algebraic geometry
+--   is, roughly speaking, the study of systems of multivariate polynomial
+--   equations. An important idea is that of an "algebraic variety", which
+--   is essentially the intersection of the roots of a set of multivariate
+--   polynomials. For example, a circle with radius &lt;math&gt; and center
+--   &lt;math&gt; is an algebraic variety, being the zero of the 2-variable
+--   polynomial &lt;math&gt;. In this framework, one can formulate and
+--   pursue various interesting ideas---e.g., a generalization of the
+--   fundamental theorem of algebra to higher dimensions, a result known as
+--   Bézout's Theorem. Anyways, as it turns out, a certain subset of
+--   algebraic varietites, known as "abelian varieties", form an abelian
+--   group. That is, the points comprising the variety are the group
+--   elements, and using the tools of algebraic geometry one can define a
+--   natural group operation obeying the group laws that is always
+--   commutative. As it turns out, this idea is central to modern
+--   cryptography.
+--   
+--   Another branch of mathematics where abelian groups shine is category
+--   theory. Categories, among many other things, abstracts abstract
+--   algebra. For example, there is a category of groups, which consists of
+--   all groups and all the homomorphisms between them (that is, functions
+--   preserving the group operations). Category theory is a very useful and
+--   interesting branch of math; it simultaneously generalizes many
+--   disprate ideas and introduces many new interesting questions of its
+--   own. Also, in a very pleasing and fun way, it abstracts itself---there
+--   is a category of categories. (Though, that last idea must be treated
+--   with utmost care to avoid set-theoretic Russel's paradox--esque
+--   issues; to bypass most of them, you can just consider the category of
+--   "small" categories.) The category of abelian groups exhibits various
+--   special properties that are useful in the study of categories in
+--   general. As such, a subset of categories known as "abelian categories"
+--   have been defined, with the category of abelian groups being the
+--   motivating example.
+module Algebra.Data.AbelianGroup
+
+-- | An <a>AbelianGroup</a> is a type that is an instance of <a>Group</a>
+--   that also satisfies the following unchecked property:
+--   
+--   <pre>
+--   x + y == y + x
+--   </pre>
+--   
+--   As the signature of abelian group is the same as that of a group, and
+--   since the axioms are currently unchecked, the minimally complete
+--   definition is the empty set.
+class Group g => AbelianGroup g
+(+) :: AbelianGroup g => g -> g -> g
+zero :: AbelianGroup g => g
+neg :: AbelianGroup g => g -> g
 
 
 -- | This package provides a basic represntation of some common algebraic
@@ -227,46 +440,3 @@
 --   the operation(s) defined over it/them, and the types of all objects
 --   involved).
 module Algebra
-
--- | A <tt>Group</tt> is a type <tt>G</tt> combined with an instance
---   declaration for the <a>Group</a> typeclass, whose minimally complete
---   (and in fact only possible) definition is of <tt>(((*) :: G -&gt; G
---   -&gt; G), ((id) :: G), (inv :: G -&gt; G))</tt> that satisfies the
---   following unchecked properties:
---   
---   <pre>
---   (x * y) * z == x * (y * z)
---   </pre>
---   
---   <pre>
---   (x * id == x) &amp;&amp; (id * x == x)
---   </pre>
---   
---   <pre>
---   (x * inv x == x) &amp;&amp; (inv x * x == x)
---   </pre>
---   
---   Note that the same type can be a group in multiple ways. This is a bit
---   annoying in Haskell, as it necessitates the use of <tt>type</tt>
---   wrappers to implement a class in different ways in the same scope.
-class (Eq g) => Group g
-(*) :: Group g => g -> g -> g
-id :: Group g => g
-inv :: Group g => g -> g
-
--- | Exponentiation, or repeated application of the group function "(*)".
---   Note that this is <i>not</i> a binary operation over a <a>Group</a>;
---   the first argument is a member of the group, but the second is just an
---   integer, specifying how many times to repeat the operation. Raising to
---   the zeroth power yields identity; raising to a negative power is the
---   corresponding positive power of the inverse.
-(^) :: (Group grp) => grp -> Integer -> grp
-
--- | The <a>order</a> of an element of a group is the smallest positive
---   integer such that raising the group element to that power (see '(^)')
---   yields the identity, <a>id</a>---or positive infinity if no such
---   element exists. The latter case implies that this function may be (and
---   in fact often is) non-terminating. In finite groups (groups with
---   finitely many elements), however, it is a useful construct; the order
---   of any element in a fintie group is finite.
-order :: (Group grp) => grp -> Integer
